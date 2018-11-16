@@ -1,0 +1,81 @@
+<html>
+<head>
+    <title>Three.js project</title>
+
+    <style>
+        body{
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas{
+            background: black;
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="myCanvas"></canvas>
+
+    <script src="three.js"></script>
+    <script>
+
+        //RENDERER
+        var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('myCanvas'), antialias: true});
+        renderer.setClearColor(0x599e59);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //CAMERA
+        var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 3000); // near/far
+        // var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, 0.1, 3000);
+
+
+        //SCENE
+        var scene = new THREE.Scene();
+
+
+        //OBJECTS
+        var geometry = new THREE.BoxGeometry(100, 100, 100);
+        var material = new THREE.MeshLambertMaterial({color: 0x2C699F}); //material must respond the light
+        var mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(0, 0, -1000);
+
+        var geometry2 = new THREE.BoxGeometry(200, 200, 200);
+        var material2 = new THREE.MeshLambertMaterial({color: 0xffb13e});
+        var mesh2 = new THREE.Mesh(geometry2, material2);
+        mesh2.position.set(0, 0, -1200);
+
+        var geometry3 = new THREE.BoxGeometry(350, 350, 350);
+        var material3 = new THREE.MeshLambertMaterial({color: 0xAC1B1B});
+        var mesh3 = new THREE.Mesh(geometry3, material3);
+        mesh3.position.set(0, 0, -1500);
+
+        scene.add(mesh, mesh2, mesh3);
+
+
+        //LIGHTS
+        var light = new THREE.AmbientLight(0xffffff, 0.5); //color,intensity
+        scene.add(light);
+
+        var light1 = new THREE.PointLight(0xffffff, 0.9);
+        scene.add(light1);
+
+
+        //RENDER LOOP
+        requestAnimationFrame(render);
+
+        function render() {
+            mesh.rotation.x += 0.03;
+            mesh.rotation.y += 0.03;
+            mesh2.rotation.x += 0.02;
+            mesh2.rotation.y += 0.02;
+            mesh3.rotation.x += 0.01;
+            mesh3.rotation.y += 0.01;
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+        }
+    </script>
+</body>
+</html>
