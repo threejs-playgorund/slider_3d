@@ -48,6 +48,28 @@
     plane.rotation.x = 6;
     //Adding to scene:
     scene.add(plane);
+        
+     //OBJECT 2
+    // Creating an element - "sheet of paper":
+    var planeGeom2 = new THREE.PlaneGeometry(100, 30, 200);
+    // Texture:
+    var plane2 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture1.jpg'), side: THREE.DoubleSide } ) );
+    //Setting position:
+    plane2.position.set(-110, 0, -100);
+    plane2.rotation.x = 6;
+    //Adding to scene:
+    scene.add(plane2);
+
+    //OBJECT 3
+    // Creating an element - "sheet of paper":
+    var planeGeom3 = new THREE.PlaneGeometry(100, 30, 200);
+    // Texture:
+    var plane3 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture1.jpg'), side: THREE.DoubleSide } ) );
+    //Setting position:
+    plane3.position.set(110, 0, -100);
+    plane3.rotation.x = 6;
+    //Adding to scene:
+    scene.add(plane3);
 
     //LIGHTS
     var light = new THREE.AmbientLight(0xffffff, 0.5); //Color,intensity
@@ -57,6 +79,8 @@
     light1.position.set( 10, 1000, 10 );
     scene.add(light1);
 
+    //CONTROLS
+    var controls = new THREE.OrbitControls(camera, render.domElement);
 
     //RENDER LOOP
     requestAnimationFrame(render);
