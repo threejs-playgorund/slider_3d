@@ -83,7 +83,8 @@
 
     //CONTROLS
     var controls = new THREE.OrbitControls(camera, render.domElement);
-
+    controls.minPolarAngle = Math.PI/2;
+    controls.maxPolarAngle = Math.PI/2;
 
     //RENDER LOOP
     requestAnimationFrame(render);
