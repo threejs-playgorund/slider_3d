@@ -11,13 +11,30 @@
         canvas{
             background: black;
         }
+        #info {
+          position: absolute;
+          top: 5%;
+          left: 5%;
+          padding: 5px 20px;
+          border: 1px solid black;
+        }
+        #info ul {
+          list-style-type: none;
+          padding: 0;
+        }
 
     </style>
 </head>
 <body>
 
     <canvas id="myCanvas"></canvas>
-
+    <div id="info">
+      <ul>Camera position:
+        <li>x : <span></span></li>
+        <li>y : <span></span></li>
+        <li>z : <span></span></li>
+      </ul>
+    </div>
 
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script> <!-- moving camera around the object -->
@@ -33,44 +50,37 @@
 
     //CAMERA
     var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(0, 2, -300);
+    camera.position.set(60, 0, 0);
+    var x = document.querySelector("#info li:first-child span");
+    var y = document.querySelector("#info li:nth-child(2) span");
+    var z = document.querySelector("#info li:nth-child(3) span");
 
 
     //SCENE
     var scene = new THREE.Scene();
 
     //OBJECT 1 (front slide)
-    var planeGeom = new THREE.PlaneGeometry(100, 30, 200);
-    var plane = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture2.jpg'), side: THREE.DoubleSide } ) );
+    var planeGeom = new THREE.PlaneGeometry(60, 80);
+    var plane = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture1.jpg'), side: THREE.DoubleSide } ) );
     plane.position.set(0, 0, -100);
     scene.add(plane);
 
     //OBJECT 2 (right slide)
-    var planeGeom2 = new THREE.PlaneGeometry(100, 30, 200);
     var plane2 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture2.jpg'), side: THREE.DoubleSide } ) );
     plane2.position.set(-100, 0, 0);
     plane2.rotation.y = 1.5;
     scene.add(plane2);
 
     //OBJECT 3 (back slide)
-    var planeGeom3 = new THREE.PlaneGeometry(100, 30, 200);
-    var plane3 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture2.jpg'), side: THREE.DoubleSide } ) );
+    var plane3 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture3.jpg'), side: THREE.DoubleSide } ) );
     plane3.position.set(0, 0, 100);
     scene.add(plane3);
 
     //OBJECT 4 (left slide)
-    var planeGeom4 = new THREE.PlaneGeometry(100, 30, 200);
-    var plane4 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture2.jpg'), side: THREE.DoubleSide } ) );
+    var plane4 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture4.jpg'), side: THREE.DoubleSide } ) );
     plane4.position.set(100, 0, 0);
     plane4.rotation.y = -1.5;
     scene.add(plane4);
-
-    //OBJECT (bottom floor)
-    var geometry = new THREE.BoxGeometry(1000, 1, 1000);
-    var material = new THREE.MeshLambertMaterial({color: 0x2C699F}); //material must respond the light
-    var mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(0, -20, -110);
-    scene.add(mesh);
 
 
     //LIGHTS
