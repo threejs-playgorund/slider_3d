@@ -12,6 +12,7 @@
             background: black;
         }
         #info {
+          min-width: 195px;
           position: absolute;
           top: 5%;
           left: 5%;
@@ -40,82 +41,96 @@
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script> <!-- moving camera around the object -->
 
     <script>
+    var renderer, scene, camera, x, y, z, controls, parent;
+
+    init();
+    animate();
+
+    function init(){
+
+      // RENDERER
+      renderer = new THREE.WebGLRenderer({canvas: document.getElementById('myCanvas'), antialias: true});
+      renderer.setClearColor(0xA6F4A6);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild( renderer.domElement );
+
+      // SCENE
+      scene = new THREE.Scene();
+
+      // CAMERA
+      camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+      camera.position.set(0, 0, 0.1);
+      x = document.querySelector("#info li:first-child span");
+      y = document.querySelector("#info li:nth-child(2) span");
+      z = document.querySelector("#info li:nth-child(3) span");
+
+      // CONTROLS
+      controls = new THREE.OrbitControls(camera);
+      controls.minPolarAngle = Math.PI/2;
+      controls.maxPolarAngle = Math.PI/2;
+
+      // AXES
+    	// scene.add(new THREE.AxisHelper(20));
+
+      // LIGHTS
+      var light = new THREE.AmbientLight(0xffffff, 0.5); //Color,intensity
+      scene.add(light);
+
+      var light1 = new THREE.PointLight(0xffffff, 0.9);
+      light1.position.set( 10, -100, -150 );
+      scene.add(light1);
+
+      // OBJECTS
+      // Geometry
+      var geometry = new THREE.PlaneGeometry(40, 55);
+
+      // Material
+      var material = new THREE.MeshBasicMaterial( {
+        color: 0xffffff,
+        wireframe: true
+      } );
+
+      // Parent
+      parent = new THREE.Object3D();
+      scene.add( parent );
+
+      // Children
+      var n = 18;
+
+      for( var i=0; i<n; i++){
+        var slide = new THREE.Object3D();
+        if(i % 2 == 0){
+          slide.position.y = 10;
+        }else {
+          slide.position.y = -10;
+        }
+
+        slide.rotation.y = i* 2 * Math.PI / n;
+        parent.add(slide);
+        var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/240px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg'), side: THREE.DoubleSide } ) );
+        mesh.position.z = 200;
+        slide.add(mesh);
+        scene.add(slide);
+      };
+    };
 
 
-    //RENDERER
-    var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('myCanvas'), antialias: true});
-    renderer.setClearColor(0xA6F4A6);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    function animate() {
 
-    //CAMERA
-    var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(60, 0, 0);
-    var x = document.querySelector("#info li:first-child span");
-    var y = document.querySelector("#info li:nth-child(2) span");
-    var z = document.querySelector("#info li:nth-child(3) span");
+      requestAnimationFrame(animate);
 
+      // Camera position:
+      x.innerText = camera.position.x;
+      y.innerText = camera.position.y;
+      z.innerText = camera.position.z;
 
-    //SCENE
-    var scene = new THREE.Scene();
+      controls.update();
 
-    //OBJECT 1 (front slide)
-    var planeGeom = new THREE.PlaneGeometry(40, 55);
-    var plane = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture1.jpg'), side: THREE.DoubleSide } ) );
-    plane.position.set(0, 0, -100);
-    scene.add(plane);
+      renderer.render(scene, camera);
 
-    //OBJECT 2 (right slide)
-    var plane2 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture2.jpg'), side: THREE.DoubleSide } ) );
-    plane2.position.set(-100, 0, 0);
-    plane2.rotation.y = 1.5;
-    scene.add(plane2);
+      }
 
-    //OBJECT 3 (back slide)
-    var plane3 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture3.jpg'), side: THREE.DoubleSide } ) );
-    plane3.position.set(0, 0, 100);
-    scene.add(plane3);
-
-    //OBJECT 4 (left slide)
-    var plane4 = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('picture4.jpg'), side: THREE.DoubleSide } ) );
-    plane4.position.set(100, 0, 0);
-    plane4.rotation.y = -1.5;
-    scene.add(plane4);
-
-
-    //LIGHTS
-    var light = new THREE.AmbientLight(0xffffff, 0.5); //Color,intensity
-    scene.add(light);
-
-    var light1 = new THREE.PointLight(0xffffff, 0.9);
-    light1.position.set( 10, -100, -150 );
-    scene.add(light1);
-
-    //CONTROLS
-    var controls = new THREE.OrbitControls(camera, render.domElement);
-    controls.minPolarAngle = Math.PI/2;
-    controls.maxPolarAngle = Math.PI/2;
-
-    //RENDER LOOP
-    requestAnimationFrame(render);
-
-    //Updating things:
-    function render() {
-        //waving:
-        planeGeom.vertices.forEach( v => {
-          //density of waves↓              how fast↓  height↓
-          v.z = Math.cos( .3 * v.x - Date.now() * .005 ) * 2;
-        });
-        planeGeom.verticesNeedUpdate = true; // the most important thing, when you change vertices
-
-        //camera position:
-        x.innerText = Math.floor(camera.position.x);
-        y.innerText = Math.floor(camera.position.y);
-        z.innerText = Math.floor(camera.position.z);
-
-        renderer.render(scene, camera);
-        requestAnimationFrame(render);
-     }
     </script>
 </body>
 </html>
