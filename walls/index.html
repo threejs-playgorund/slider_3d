@@ -1,7 +1,8 @@
-<html>
+ <html>
 <head>
     <title>Three.js project</title>
-
+    <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
         body{
             margin: 0;
@@ -23,6 +24,14 @@
           list-style-type: none;
           padding: 0;
         }
+        .textclass {
+          color: red;
+          font-size: 30px;
+          line-height: 1.5;
+          width: 50px;
+          height: 50px;
+          border: 1px solid red;
+        }
 
     </style>
 </head>
@@ -34,14 +43,50 @@
         <li>x : <span></span></li>
         <li>y : <span></span></li>
         <li>z : <span></span></li>
+        <li>Amount of slides: <span></span></li>
       </ul>
     </div>
 
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script> <!-- moving camera around the object -->
+    <script src="https://threejs.org/examples/js/renderers/CSS2DRenderer.js"></script>
+    <script src="https://unpkg.com/three.texttexture"></script>
 
     <script>
-    var renderer, scene, camera, x, y, z, controls, parent;
+    var renderer, scene, camera, x, y, z, n, controls, parent;
+
+    var people = [
+      {
+        image: "picture1.jpg",
+        name: "Name1",
+        position: "Position1"
+      },
+      {
+        image: "picture2.jpg",
+        name: "Name2",
+        position: "Position2"
+      },
+      {
+        image: "picture3.jpg",
+        name: "Name3",
+        position: "Position3"
+      },
+      {
+        image: "picture4.jpg",
+        name: "Name4",
+        position: "Position4"
+      },
+      {
+        image: "picture5.jpg",
+        name: "Name5",
+        position: "Position5"
+      },
+      {
+        image: "picture6.jpg",
+        name: "Name6",
+        position: "Position6"
+      }
+    ]
 
     init();
     animate();
@@ -50,10 +95,18 @@
 
       // RENDERER
       renderer = new THREE.WebGLRenderer({canvas: document.getElementById('myCanvas'), antialias: true});
-      renderer.setClearColor(0xA6F4A6);
+      renderer.setClearColor(0xdbdbdb);
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild( renderer.domElement );
+      document.body.appendChild(renderer.domElement);
+
+      labelRenderer = new THREE.CSS2DRenderer();
+      labelRenderer.setSize(window.innerWidth, window.innerHeight);
+      labelRenderer.domElement.style.position = 'absolute';
+      labelRenderer.domElement.style.top = 0;
+      labelRenderer.domElement.style.right = 0;
+      document.body.appendChild(labelRenderer.domElement);
+
 
       // SCENE
       scene = new THREE.Scene();
@@ -64,6 +117,7 @@
       x = document.querySelector("#info li:first-child span");
       y = document.querySelector("#info li:nth-child(2) span");
       z = document.querySelector("#info li:nth-child(3) span");
+      amount = document.querySelector("#info li:nth-child(4) span");
 
       // CONTROLS
       controls = new THREE.OrbitControls(camera);
@@ -81,36 +135,75 @@
       light1.position.set( 10, -100, -150 );
       scene.add(light1);
 
+
       // OBJECTS
       // Geometry
       var geometry = new THREE.PlaneGeometry(40, 55);
 
       // Material
-      var material = new THREE.MeshBasicMaterial( {
-        color: 0xffffff,
-        wireframe: true
-      } );
+      var material = new THREE.MeshBasicMaterial({});
+
+      // Text
+      var textureTitle = new THREE.TextTexture({
+        fontFamily: '"Times New Roman", Times, serif',
+        fontSize: 32,
+        fontWeight: 700,
+        marginLeft: 40,
+        textAlign: 'left',
+      });
+      var textureSubtitle = new THREE.TextTexture({
+        fontFamily: '"Times New Roman", Times, serif',
+        fontSize: 28,
+        marginLeft: 40,
+        textAlign: 'left',
+      });
 
       // Parent
       parent = new THREE.Object3D();
-      scene.add( parent );
+      scene.add(parent);
 
       // Children
-      var n = 18;
+      n = people.length;
+      amount.innerText = n;
 
       for( var i=0; i<n; i++){
         var slide = new THREE.Object3D();
-        if(i % 2 == 0){
-          slide.position.y = 10;
-        }else {
-          slide.position.y = -10;
-        }
 
+        // Slide
         slide.rotation.y = i* 2 * Math.PI / n;
         parent.add(slide);
-        var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/240px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg'), side: THREE.DoubleSide } ) );
+        var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load( people[i].image), side: THREE.DoubleSide } ) );
         mesh.position.z = 200;
         slide.add(mesh);
+
+        // Text
+        textureTitle = new THREE.TextTexture({ text: people[i].name });
+        var materialTitle = new THREE.SpriteMaterial({map: textureTitle, color: 0x000000});
+        var spriteTitle = new THREE.Sprite(materialTitle);
+        spriteTitle.scale.setX(textureTitle.imageAspect).multiplyScalar(5);
+        spriteTitle.position.x = mesh.position.x-25;
+        spriteTitle.position.z = mesh.position.z-50;
+        slide.add(spriteTitle);
+
+        textureSubtitle = new THREE.TextTexture({ text: people[i].position });
+        var materialSubtitle = new THREE.SpriteMaterial({map: textureSubtitle, color: 0x000000});
+        var spriteSubtitle = new THREE.Sprite(materialSubtitle);
+        spriteSubtitle.scale.setX(textureSubtitle.imageAspect).multiplyScalar(5);
+        spriteSubtitle.position.x = mesh.position.x-25;
+        spriteSubtitle.position.z = mesh.position.z-50;
+        slide.add(spriteSubtitle);
+
+
+        if(i % 2 == 0){
+          slide.position.y = 10;
+          spriteTitle.position.y = mesh.position.y+15;
+          spriteSubtitle.position.y = mesh.position.y+10;
+        }else {
+          slide.position.y = -10;
+          spriteTitle.position.y = mesh.position.y-10;
+          spriteSubtitle.position.y = mesh.position.y-15;
+        }
+
         scene.add(slide);
       };
     };
@@ -128,7 +221,7 @@
       controls.update();
 
       renderer.render(scene, camera);
-
+      labelRenderer.render(scene, camera);
       }
 
     </script>
