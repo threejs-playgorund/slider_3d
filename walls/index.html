@@ -3,6 +3,7 @@
     <title>Three.js project</title>
     <meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <style>
         body{
             margin: 0;
@@ -123,6 +124,7 @@
       controls = new THREE.OrbitControls(camera);
       controls.minPolarAngle = Math.PI/2;
       controls.maxPolarAngle = Math.PI/2;
+      controls.enableZoom = false;
 
       // AXES
     	// scene.add(new THREE.AxisHelper(20));
@@ -206,6 +208,15 @@
 
         scene.add(slide);
       };
+
+      // Waving:
+      controls.addEventListener( 'change', function(){
+          geometry.vertices.forEach( v => {
+            // density of waves↓              how fast↓  height↓
+            v.z = Math.cos( 0.1 * v.x - Date.now() * 0.005 ) * 5;
+          });
+          geometry.verticesNeedUpdate = true;
+      });
     };
 
 
@@ -222,7 +233,7 @@
 
       renderer.render(scene, camera);
       labelRenderer.render(scene, camera);
-      }
+    }
 
     </script>
 </body>
